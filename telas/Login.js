@@ -2,27 +2,44 @@ import { Button, Text, TextInput, View } from "react-native";
 import { app } from '../firebase'
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function Login()
+export default function Login( props )
 {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
+    const [erro, setErro] = useState(null);
 
     async function logar()
     {
-        const auth = getAuth(app);
-        const resposta = await signInWithEmailAndPassword(auth, email, senha);
-        console.log(resposta);
+        
+        try {
+            const auth = getAuth(app);
+            const resposta = await signInWithEmailAndPassword(auth, email, senha);
+            const usuario = JSON.stringify(resposta);
+            props.logado(true);
+            
+        } catch (e)
+        {
+            console.log(e, email);
+            setErro(true);
+        }
+        
     }
 
     return (
-        <View>
-            <Text>Email</Text>
-            <TextInput onChange={(evento) => setEmail(evento.target.value)}/>
-            <Text>Senha</Text>
-            <TextInput onChange={(evento) => setSenha(evento.target.value)}/>
+        <SafeAreaView>
+            <View>
+                { (erro) ? <Text>Usuário ou Senha Inválidos</Text> : null }
 
-            <Button title="Entrar" onPress={logar}/>
-        </View>
+                <Text>Email</Text>
+                <TextInput onChangeText={ (evento) => setEmail(evento) } />
+                <Text>Senha</Text>
+                <TextInput 
+                    secureTextEntry={true} 
+                    onChangeText={ (evento) => setSenha(evento) } />
+                <Button title="Entrar" onPress={logar}/>
+            </View>
+        </SafeAreaView>
     )
 }
