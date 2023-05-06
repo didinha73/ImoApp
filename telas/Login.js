@@ -1,8 +1,10 @@
-import { Button, Text, TextInput, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
+import { Button } from '@rneui/themed';
 import { app } from '../firebase'
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login( props )
 {
@@ -17,6 +19,9 @@ export default function Login( props )
             const auth = getAuth(app);
             const resposta = await signInWithEmailAndPassword(auth, email, senha);
             const usuario = JSON.stringify(resposta);
+
+            await AsyncStorage.setItem("usuario",usuario);
+
             props.logado(true);
             
         } catch (e)
