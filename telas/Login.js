@@ -1,5 +1,5 @@
-import { Text, TextInput, View } from "react-native";
-import { Button } from '@rneui/themed';
+import { View, StyleSheet } from "react-native";
+import { Button, Text, Input as TextInput } from '@rneui/themed';
 import { app } from '../firebase'
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
@@ -38,9 +38,12 @@ export default function Login( props )
                 { (erro) ? <Text>Usuário ou Senha Inválidos</Text> : null }
 
                 <Text>Email</Text>
-                <TextInput onChangeText={ (evento) => setEmail(evento) } />
+                <TextInput 
+                    placeholder="E-mail"
+                    onChangeText={ (evento) => setEmail(evento) } />
                 <Text>Senha</Text>
                 <TextInput 
+                    placeholder="Senha"
                     secureTextEntry={true} 
                     onChangeText={ (evento) => setSenha(evento) } />
                 <Button title="Entrar" onPress={logar}/>
