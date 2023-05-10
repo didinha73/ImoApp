@@ -8,7 +8,7 @@ import { ListItemSubtitle } from "@rneui/base/dist/ListItem/ListItem.Subtitle";
 import Avaliacao from "./Avaliacao";
 
 import {app} from "../firebase";
-import {getFirestore, collection, getDocs} from "firebase/firestore";
+import {getFirestore, collection, getDocs, query, where} from "firebase/firestore";
 import { useEffect, useState } from "react";
 
 const db = getFirestore(app);
@@ -27,9 +27,16 @@ export default function Home(props)
 
     async function carregarCasas(){
 
-        let imoveis = [];
+        let usuario = await AsyncStorage.getItem("usuario");
+        usuario = JSON.parse(usuario);
+
+        let uid = usuario.user.uid;
         const ref = collection(db, "imoveis");
+        let filtro = query(ref, where("id_usuario", "==", uid))
+
+        let imoveis = [];
         const retorno = await getDocs(ref);
+        //const retorno = await getDocs(filtro);
         retorno.forEach(item => {
             let dados = item.data();
             dados.id = item.id;
@@ -37,7 +44,11 @@ export default function Home(props)
             
         });
         console.log(imoveis);
-        setCasas(imoveis);
+
+        if(imoveis.length > 0){
+            setCasas(imoveis);
+        }
+        
     }
 
     useEffect(()=>{
@@ -54,7 +65,7 @@ export default function Home(props)
             <Pressable onPress={() => { setSelecionado(item) }} key={item.id}>
                 <ListItem bottomDivider>
                     <ListItem.Content>
-                        <ListItemTitle>{item.codigo}-{item.descricao}</ListItemTitle>
+                        <ListItemTitle>{item.codigo}</ListItemTitle>
                         <ListItemSubtitle>{item.endereco}</ListItemSubtitle>
                     </ListItem.Content>
                 </ListItem>
@@ -62,7 +73,6 @@ export default function Home(props)
 
         )
     })
-
     const tela = (selecionado)? <Avaliacao selecionado={selecionado} alterar={setSelecionado} /> : listaImoveis;
     return (
 
